@@ -1,0 +1,270 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-TW" lang="zh-TW">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+	<!-- <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="bootstrap.min.css">
+	<link rel="stylesheet" href="font-awesome.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Raleway:400,500,500i,700,800i" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+	<link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
+	<script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		#map {
+			position: absolute;
+			top: 500px;
+			left: 25%;
+			height: 600px;
+			width: 50%;
+		}
+	</style>
+	<title>香港大學光污染研究 Light Pollution Research at The University of Hong Kong</title>
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+	<script type="text/javascript" src="myOverlay.js"></script>
+	<script type="text/javascript" src="handleGMdata.js"></script>
+	<script type="text/javascript">
+		var gps = eval([["HKU", "22.28325", "114.139795", "\u9999\u6e2f\u5927\u5b78\u5929\u6587\u53f0", "HKU Observatory", "http:\/\/www.physics.hku.hk\/~astro\/"], ["KP", "22.312017", "114.172341", "\u9999\u6e2f\u5929\u6587\u53f0\u4eac\u58eb\u67cf\u6c23\u8c61\u7ad9", "King's Park Meteorological Station, Hong Kong Observatory", "http:\/\/www.hko.gov.hk\/wxinfo\/aws\/kpinfoc.htm"], ["iObs", "22.408319", "114.322896", "\u9999\u6e2f\u592a\u7a7a\u9928\u897f\u8ca2\u9059\u63a7\u5929\u6587\u53f0", "Hong Kong Space Museum Sai Kung iObservatory", "http:\/\/hk.space.museum\/"], ["TMD", "22.367927", "113.943155", "\u5c6f\u9580\u653f\u5e9c\u5009\u5eab", "Tuen Mun Government Depot", "#"], ["AP", "22.376556", "114.336079", "\u9999\u6e2f\u592a\u7a7a\u9928\u5929\u6587\u516c\u5712", "Hong Kong Space Museum Astropark", "http:\/\/astropark.hk.space.museum\/"], ["SH", "22.220327", "113.89451", "\u9999\u6e2f\u5929\u6587\u53f0\u77f3\u58c1\u6f6e\u6c50\u6e2c\u91cf\u7ad9", "Shek Pik Tide Gauge Station, Hong Kong Observatory", "http:\/\/www.hko.gov.hk"], ["Cap", "22.207891", "114.260299", "\u9999\u6e2f\u5927\u5b78\u592a\u53e4\u6d77\u6d0b\u79d1\u5b78\u7814\u7a76\u6240", "The Swire Institute of Marine, HKU", "http:\/\/www0.hku.hk\/swims\/"]]);
+		var nsb15 = eval('[["TMD",11.055],["HKU","0"],["KP","0"],["iObs","0"],["AP","0"],["SH","0"],["Cap","0"]]');
+		var isNowNight = 1;
+		var nsb = eval('[["TMD","18.03"],["HKU","0"],["KP","0"],["iObs","0"],["AP","0"],["SH","0"],["Cap","0"]]');
+		var updatedOn = "2021-05-22 19:18:49";
+
+		window.onload = initialize;
+	</script>
+
+	<link href="reset.css" rel="stylesheet" type="text/css" media="all" />
+	<link href="style.css" rel="stylesheet" type="text/css" media="all" />
+	<!--[if IE 6]>
+<style type="text/css">
+	div.logo img,
+	div.title img,
+	div#content .content-top,
+	div#content .content-details .container .index-map .map-info,
+	div#header .section-news,
+	div#header .section-hk-light-pollution-map,
+	div#header .section-academic-areas,
+	div#header .section-light-pollution,
+	div#header .section-reference,
+	div#header .section-contact-us,
+	div#content .content-details .container .side-menu ul li ul li a,
+	div#footer{ behavior: url(http://nightsky.physics.hku.hk/assets/js/iepngfix.htc) }
+</style>
+
+<script type="text/javascript" src="http://nightsky.physics.hku.hk/assets/js/iepngfix_tilebg.js"></script> 
+<![endif]-->
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript">
+		function basename(path) {
+			return path.replace(/\\/g, '/').replace(/.*\//, '');
+		}
+		function dirname(path) {
+			return path.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
+		}
+
+		$(function () {
+			$('.side-menu > ul > li > a').each(function () {
+				if (basename(location.href) == "how-to-reduce-light-pollution.php" ||
+					basename(location.href) == "choosing-astronomical-friendly-lighting-sources.php" ||
+					basename(location.href) == "reduce-abuse-of-outdoor-lightings.php" ||
+					basename(location.href) == "modifying-the-existing-lightings.php" ||
+					basename(location.href) == "designing-lightings-to-become-more-dark-sky-friendly.php" ||
+					basename(location.href) == "saving-energy.php"
+				) {
+					document.getElementById("htrlp").style.display = "block";
+				}
+
+				if ($(this).attr('href') == basename(location.href)) {
+					$(this).parent().addClass('selected');
+					$(this).addClass('selected');
+				}
+			});
+
+			$('.side-menu > ul > li > ul > li > a').each(function () {
+				if ($(this).attr('href') == basename(location.href)) {
+					$(this).parent().addClass('selected');
+					$(this).parent().parent().parent().addClass('selected');
+					$(this).addClass('selected');
+				}
+			});
+
+		});
+
+	</script>
+
+	<script type="text/javascript">
+
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-26460368-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function () {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+
+	</script>
+
+
+
+
+</head>
+
+<body class="home">
+	<div id="wrapper">
+		<!-- =============Header==================== -->
+		<div id="header">
+			<div class="logo left"><a href="http://nightsky.physics.hku.hk/assets/../index.php"><img
+						src="http://nightsky.physics.hku.hk/assets/images/logo.png" alt="香港大學光污染研究 Light Pollution Research at The University of Hong Kong
+" /></a></div>
+			<div class="shortcut right">
+				<div class="left">
+					<span><a style="zoom:1; vertical-align:baseline;"
+							href="http://nightsky.physics.hku.hk/assets/../index.php">返回主頁<br />Back to home
+							page</a></span>
+					<span><a href="http://nightsky.physics.hku.hk/assets/../contact-us.php">聯絡我們<br />Contact
+							Us</a></span>
+				</div>
+				<div class="right">
+					Login
+				</div>
+			</div>
+			<br class="clear" />
+
+			<div id="top-menu" class="nav">
+				<ul>
+					<li><a class="news" href="http://nightsky.physics.hku.hk/assets/../news.php">最新消息 News</a></li>
+					<li><a class="map"
+							href="http://nightsky.physics.hku.hk/assets/../hk-light-pollution-map.php">香港夜空光度分佈圖 HK
+							Light Pollution Map</a></li>
+					<li><a class="academic"
+							href="http://nightsky.physics.hku.hk/assets/../academic-areas.php">科研天地(只供英語內容) Academic
+							Areas</a></li>
+					<li><a class="light-pollution"
+							href="http://nightsky.physics.hku.hk/assets/../what-is-light-pollution.php">光害 Light
+							Pollution</a></li>
+					<li><a class="reference" href="http://nightsky.physics.hku.hk/assets/../reference-iau.php">參考資料
+							Reference</a></li>
+					<li><a class="organizers" href="http://nightsky.physics.hku.hk/assets/../co-organizers.php">協辦機構
+							Co-organizers</a></li>
+					<li><a class="past-survey" href="http://nightsky.physics.hku.hk/assets/../past-survey.php">過往調查 Past
+							Survey</a></li>
+				</ul>
+			</div>
+		</div>
+		<!-- ============content===================== -->
+		<div id="content">
+			<div class="content-top">
+				<!--empty-->
+			</div>
+			<div class="content-details" style="height:620px">
+				<div class="container">
+					<br><strong>
+						<h2>360 Image Viewer (Click to view in VR mode)</h2>
+					</strong></br>
+					<div style="float:left;" id="map">
+						<script>
+							// TO MAKE THE MAP APPEAR YOU MUST
+							// ADD YOUR ACCESS TOKEN FROM
+							// https://account.mapbox.com
+							mapboxgl.accessToken = 'pk.eyJ1Ijoic3RvcDY4IiwiYSI6ImNqY2tqdmY5ZjN1c2kzM28zN3pncTkxc3kifQ.5O5ns1xgihc9i6XvQxCFJQ';
+							var map = new mapboxgl.Map({
+								container: 'map',
+								style: 'mapbox://styles/mapbox/light-v10',
+								center: [114.15, 22.285],
+								zoom: 14
+							});
+							map.on('load', function () {
+								// Add an image to use as a custom marker
+								// Add a GeoJSON source with 2 points
+								map.addSource('points', {
+									'type': 'geojson',
+									'data': { 'type': 'FeatureCollection', 'features': [{ 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.159722, 22.280833] }, 'properties': { 'title': '0', 'description': '<p><a href="view.html?param1=215722">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.159722, 22.280278] }, 'properties': { 'title': '1', 'description': '<p><a href="view.html?param1=215735">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.159722, 22.280278] }, 'properties': { 'title': '2', 'description': '<p><a href="view.html?param1=215747">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.159444, 22.280556] }, 'properties': { 'title': '3', 'description': '<p><a href="view.html?param1=215959">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.159444, 22.280556] }, 'properties': { 'title': '4', 'description': '<p><a href="view.html?param1=220010">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.158889, 22.280833] }, 'properties': { 'title': '5', 'description': '<p><a href="view.html?param1=220140">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.158611, 22.280833] }, 'properties': { 'title': '6', 'description': '<p><a href="view.html?param1=220206">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.158333, 22.280833] }, 'properties': { 'title': '7', 'description': '<p><a href="view.html?param1=220229">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.158056, 22.281667] }, 'properties': { 'title': '8', 'description': '<p><a href="view.html?param1=220351">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.158056, 22.281667] }, 'properties': { 'title': '9', 'description': '<p><a href="view.html?param1=220402">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.1575, 22.281944] }, 'properties': { 'title': '10', 'description': '<p><a href="view.html?param1=220507">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.1575, 22.281944] }, 'properties': { 'title': '11', 'description': '<p><a href="view.html?param1=220524">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.1575, 22.281944] }, 'properties': { 'title': '12', 'description': '<p><a href="view.html?param1=220539">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.1575, 22.281944] }, 'properties': { 'title': '13', 'description': '<p><a href="view.html?param1=220621">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.157222, 22.282222] }, 'properties': { 'title': '14', 'description': '<p><a href="view.html?param1=220706">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.157222, 22.2825] }, 'properties': { 'title': '15', 'description': '<p><a href="view.html?param1=220744">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156944, 22.282778] }, 'properties': { 'title': '16', 'description': '<p><a href="view.html?param1=220812">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156944, 22.282778] }, 'properties': { 'title': '17', 'description': '<p><a href="view.html?param1=220825">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156944, 22.283056] }, 'properties': { 'title': '18', 'description': '<p><a href="view.html?param1=220903">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156389, 22.283333] }, 'properties': { 'title': '19', 'description': '<p><a href="view.html?param1=220946">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156389, 22.283611] }, 'properties': { 'title': '20', 'description': '<p><a href="view.html?param1=221018">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156389, 22.283611] }, 'properties': { 'title': '21', 'description': '<p><a href="view.html?param1=221036">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156389, 22.283611] }, 'properties': { 'title': '22', 'description': '<p><a href="view.html?param1=221045">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156111, 22.283611] }, 'properties': { 'title': '23', 'description': '<p><a href="view.html?param1=221118">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155556, 22.283056] }, 'properties': { 'title': '24', 'description': '<p><a href="view.html?param1=221215">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155556, 22.283056] }, 'properties': { 'title': '25', 'description': '<p><a href="view.html?param1=221255">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155278, 22.283056] }, 'properties': { 'title': '26', 'description': '<p><a href="view.html?param1=221307">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155278, 22.282778] }, 'properties': { 'title': '27', 'description': '<p><a href="view.html?param1=221402">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155278, 22.282778] }, 'properties': { 'title': '28', 'description': '<p><a href="view.html?param1=221432">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155556, 22.2825] }, 'properties': { 'title': '29', 'description': '<p><a href="view.html?param1=221516">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155833, 22.2825] }, 'properties': { 'title': '30', 'description': '<p><a href="view.html?param1=221544">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155833, 22.2825] }, 'properties': { 'title': '31', 'description': '<p><a href="view.html?param1=221553">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156111, 22.281944] }, 'properties': { 'title': '32', 'description': '<p><a href="view.html?param1=221635">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156111, 22.281944] }, 'properties': { 'title': '33', 'description': '<p><a href="view.html?param1=221645">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156389, 22.281667] }, 'properties': { 'title': '34', 'description': '<p><a href="view.html?param1=221719">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156389, 22.281667] }, 'properties': { 'title': '35', 'description': '<p><a href="view.html?param1=221741">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156389, 22.281667] }, 'properties': { 'title': '36', 'description': '<p><a href="view.html?param1=221749">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156389, 22.281389] }, 'properties': { 'title': '37', 'description': '<p><a href="view.html?param1=221835">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156667, 22.281389] }, 'properties': { 'title': '38', 'description': '<p><a href="view.html?param1=221844">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156667, 22.281389] }, 'properties': { 'title': '39', 'description': '<p><a href="view.html?param1=221905">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156667, 22.281389] }, 'properties': { 'title': '40', 'description': '<p><a href="view.html?param1=221916">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.156944, 22.281389] }, 'properties': { 'title': '41', 'description': '<p><a href="view.html?param1=221925">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155, 22.283611] }, 'properties': { 'title': '42', 'description': '<p><a href="view.html?param1=223441">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155, 22.283611] }, 'properties': { 'title': '43', 'description': '<p><a href="view.html?param1=223522">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155, 22.283611] }, 'properties': { 'title': '44', 'description': '<p><a href="view.html?param1=223553">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155, 22.283611] }, 'properties': { 'title': '45', 'description': '<p><a href="view.html?param1=223619">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155278, 22.283611] }, 'properties': { 'title': '46', 'description': '<p><a href="view.html?param1=223653">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155556, 22.283889] }, 'properties': { 'title': '47', 'description': '<p><a href="view.html?param1=223724">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155833, 22.284167] }, 'properties': { 'title': '48', 'description': '<p><a href="view.html?param1=223813">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155833, 22.284167] }, 'properties': { 'title': '49', 'description': '<p><a href="view.html?param1=223836">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155833, 22.284167] }, 'properties': { 'title': '50', 'description': '<p><a href="view.html?param1=223953">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155833, 22.284444] }, 'properties': { 'title': '51', 'description': '<p><a href="view.html?param1=224024">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155556, 22.284444] }, 'properties': { 'title': '52', 'description': '<p><a href="view.html?param1=224059">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155278, 22.284722] }, 'properties': { 'title': '53', 'description': '<p><a href="view.html?param1=224141">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.155, 22.285] }, 'properties': { 'title': '54', 'description': '<p><a href="view.html?param1=224210">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.154444, 22.285278] }, 'properties': { 'title': '55', 'description': '<p><a href="view.html?param1=224251">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.154444, 22.285278] }, 'properties': { 'title': '56', 'description': '<p><a href="view.html?param1=224310">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.153889, 22.285833] }, 'properties': { 'title': '57', 'description': '<p><a href="view.html?param1=224414">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.153333, 22.285833] }, 'properties': { 'title': '58', 'description': '<p><a href="view.html?param1=224454">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.153333, 22.285556] }, 'properties': { 'title': '59', 'description': '<p><a href="view.html?param1=224527">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.153333, 22.285556] }, 'properties': { 'title': '60', 'description': '<p><a href="view.html?param1=224553">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.152778, 22.285833] }, 'properties': { 'title': '61', 'description': '<p><a href="view.html?param1=224633">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.152222, 22.285833] }, 'properties': { 'title': '62', 'description': '<p><a href="view.html?param1=224714">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.151944, 22.285833] }, 'properties': { 'title': '63', 'description': '<p><a href="view.html?param1=224742">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.151944, 22.285833] }, 'properties': { 'title': '64', 'description': '<p><a href="view.html?param1=224808">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.151944, 22.285833] }, 'properties': { 'title': '65', 'description': '<p><a href="view.html?param1=224817">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.151667, 22.286111] }, 'properties': { 'title': '66', 'description': '<p><a href="view.html?param1=224853">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.151111, 22.286111] }, 'properties': { 'title': '67', 'description': '<p><a href="view.html?param1=224936">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.150833, 22.286111] }, 'properties': { 'title': '68', 'description': '<p><a href="view.html?param1=225006">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.150278, 22.286389] }, 'properties': { 'title': '69', 'description': '<p><a href="view.html?param1=225059">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.150278, 22.286389] }, 'properties': { 'title': '70', 'description': '<p><a href="view.html?param1=225108">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.150278, 22.286111] }, 'properties': { 'title': '71', 'description': '<p><a href="view.html?param1=225139">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.15, 22.285833] }, 'properties': { 'title': '72', 'description': '<p><a href="view.html?param1=225211">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.15, 22.285556] }, 'properties': { 'title': '73', 'description': '<p><a href="view.html?param1=225246">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.149444, 22.285833] }, 'properties': { 'title': '74', 'description': '<p><a href="view.html?param1=225337">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.149167, 22.285833] }, 'properties': { 'title': '75', 'description': '<p><a href="view.html?param1=225412">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.148889, 22.285833] }, 'properties': { 'title': '76', 'description': '<p><a href="view.html?param1=225441">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.148333, 22.286111] }, 'properties': { 'title': '77', 'description': '<p><a href="view.html?param1=225525">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.147778, 22.286667] }, 'properties': { 'title': '78', 'description': '<p><a href="view.html?param1=225628">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.1475, 22.286667] }, 'properties': { 'title': '79', 'description': '<p><a href="view.html?param1=225706">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.147222, 22.286389] }, 'properties': { 'title': '80', 'description': '<p><a href="view.html?param1=225745">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.146944, 22.286389] }, 'properties': { 'title': '81', 'description': '<p><a href="view.html?param1=225826">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.146667, 22.286111] }, 'properties': { 'title': '82', 'description': '<p><a href="view.html?param1=225852">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.146389, 22.286111] }, 'properties': { 'title': '83', 'description': '<p><a href="view.html?param1=225923">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.146389, 22.286111] }, 'properties': { 'title': '84', 'description': '<p><a href="view.html?param1=225932">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.146111, 22.286111] }, 'properties': { 'title': '85', 'description': '<p><a href="view.html?param1=230006">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.145833, 22.286111] }, 'properties': { 'title': '86', 'description': '<p><a href="view.html?param1=230037">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.145278, 22.286389] }, 'properties': { 'title': '87', 'description': '<p><a href="view.html?param1=230123">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.145, 22.286667] }, 'properties': { 'title': '88', 'description': '<p><a href="view.html?param1=230152">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.144722, 22.286944] }, 'properties': { 'title': '89', 'description': '<p><a href="view.html?param1=230243">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.144722, 22.287222] }, 'properties': { 'title': '90', 'description': '<p><a href="view.html?param1=230711">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.144167, 22.286944] }, 'properties': { 'title': '91', 'description': '<p><a href="view.html?param1=230751">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.143889, 22.286944] }, 'properties': { 'title': '92', 'description': '<p><a href="view.html?param1=230813">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.143611, 22.286667] }, 'properties': { 'title': '93', 'description': '<p><a href="view.html?param1=230846">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.143056, 22.286944] }, 'properties': { 'title': '94', 'description': '<p><a href="view.html?param1=230927">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.142778, 22.286667] }, 'properties': { 'title': '95', 'description': '<p><a href="view.html?param1=231001">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.142222, 22.286667] }, 'properties': { 'title': '96', 'description': '<p><a href="view.html?param1=231102">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.142222, 22.286944] }, 'properties': { 'title': '97', 'description': '<p><a href="view.html?param1=231131">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.142222, 22.2875] }, 'properties': { 'title': '98', 'description': '<p><a href="view.html?param1=231207">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.142222, 22.287778] }, 'properties': { 'title': '99', 'description': '<p><a href="view.html?param1=231240">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.142222, 22.287778] }, 'properties': { 'title': '100', 'description': '<p><a href="view.html?param1=231321">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.141667, 22.287778] }, 'properties': { 'title': '101', 'description': '<p><a href="view.html?param1=231355">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.141389, 22.287778] }, 'properties': { 'title': '102', 'description': '<p><a href="view.html?param1=231433">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.141111, 22.287778] }, 'properties': { 'title': '103', 'description': '<p><a href="view.html?param1=231501">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.140833, 22.287778] }, 'properties': { 'title': '104', 'description': '<p><a href="view.html?param1=231532">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.139444, 22.287778] }, 'properties': { 'title': '105', 'description': '<p><a href="view.html?param1=231707">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.139167, 22.2875] }, 'properties': { 'title': '106', 'description': '<p><a href="view.html?param1=231736">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.138611, 22.287222] }, 'properties': { 'title': '107', 'description': '<p><a href="view.html?param1=231825">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.138611, 22.287222] }, 'properties': { 'title': '108', 'description': '<p><a href="view.html?param1=231834">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.138611, 22.287222] }, 'properties': { 'title': '109', 'description': '<p><a href="view.html?param1=231859">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.138056, 22.287222] }, 'properties': { 'title': '110', 'description': '<p><a href="view.html?param1=231939">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.137222, 22.286944] }, 'properties': { 'title': '111', 'description': '<p><a href="view.html?param1=232036">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.137222, 22.286944] }, 'properties': { 'title': '112', 'description': '<p><a href="view.html?param1=232106">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.137222, 22.287222] }, 'properties': { 'title': '113', 'description': '<p><a href="view.html?param1=232128">click here for the VR view</a></p>' } }, { 'type': 'Feature', 'geometry': { 'type': 'Point', 'coordinates': [114.137222, 22.287222] }, 'properties': { 'title': '114', 'description': '<p><a href="view.html?param1=232146">click here for the VR view</a></p>' } }] }
+								});
+								map.addLayer({
+									'id': 'points',
+									'type': 'circle',
+									'source': 'points',
+									'paint': {
+										'circle-radius': 5,
+										'circle-color': '#B42222'
+									},
+									'filter': ['==', '$type', 'Point']
+								})
+							});
+							// When a click event occurs on a feature in the places layer, open a popup at the
+							// location of the feature, with description HTML from its properties.
+							map.on('click', 'points', function (e) {
+								var coordinates = e.features[0].geometry.coordinates.slice();
+								var description = e.features[0].properties.description;
+
+								// Ensure that if the map is zoomed out such that multiple
+								// copies of the feature are visible, the popup appears
+								// over the copy being pointed to.
+								while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+									coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+								}
+
+								new mapboxgl.Popup()
+									.setLngLat(coordinates)
+									.setHTML(description)
+									.addTo(map);
+							});
+							// Change the cursor to a pointer when the mouse is over the places layer.
+							map.on('mouseenter', 'points', function () {
+								map.getCanvas().style.cursor = 'pointer';
+							});
+							// Change it back to a pointer when it leaves.
+							map.on('mouseleave', 'points', function () {
+								map.getCanvas().style.cursor = '';
+							});
+						</script>
+					</div>
+					<div style="clear:both;"></div>
+					<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+						integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+						crossorigin="anonymous"></script>
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+						integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+						crossorigin="anonymous"></script>
+					<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+						integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+						crossorigin="anonymous"></script>
+
+					<br class="clear" />
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div id="tracer">
+		<!-- ============footer===================== -->
+		<div id="footer">
+			<div class="left disclaimer">
+
+				<p>免責聲明︰此網站由香港大學物理系製作及管理。該學系會盡力確保網站上的資料無誤，其資料只作一般性質及說明用途。部分資料或圖片另註明來源或版權。</p>
+				<p>Disclaimer:This website is produced and maintained by the Department of Physics, The University of
+					Hong Kong. The department endeavours to ensure the accuracy of the information contained on this
+					website. The information provided by this website is for a general, indicative purpose only. Credits
+					or copyrights are stated for some of the information or images.</p>
+			</div>
+			<div class="right logo">
+				<a class="hku" href="http://www.hku.hk/" target="_blank">香港大學 The University of Hong Kong</a>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
